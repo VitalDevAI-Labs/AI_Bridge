@@ -4,7 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { MultiSelect, type Option } from '@/components/ui/multiselect';
-import { MultipleSelect, type TTag } from '@/components/ui/multiple-select';
+import { CategorySelect, type CategoryOption } from '@/components/ui/category-select';
+import { TagsSelect, type TagOption } from '@/components/ui/tags-select';
 import { useCreateLlmLink, useLlmLinks } from '@/hooks/useLlmLinks';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -30,8 +31,8 @@ export function NewLinkForm({ onClose }: NewLinkFormProps) {
     url: ''
   });
   const [selectedModels, setSelectedModels] = useState<Option[]>([]);
-  const [selectedAreaTags, setSelectedAreaTags] = useState<TTag[]>([]);
-  const [selectedAreaCategories, setSelectedAreaCategories] = useState<TTag[]>([]);
+  const [selectedAreaTags, setSelectedAreaTags] = useState<string[]>([]);
+  const [selectedAreaCategories, setSelectedAreaCategories] = useState<string[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,44 +70,10 @@ export function NewLinkForm({ onClose }: NewLinkFormProps) {
 
   // Extract unique categories and tags from existing data
   const availableOptions = useMemo(() => {
-    if (!existingLinks) return { categories: [], tags: [] };
-    
-    const categorySet = new Set<string>();
-    const tagSet = new Set<string>();
-    
-    existingLinks.forEach(link => {
-      // Handle categories
-      if (Array.isArray(link.category)) {
-        link.category.forEach(cat => {
-          if (cat && typeof cat === 'string') {
-            categorySet.add(cat);
-          }
-        });
-      }
-      
-      // Handle tags
-      if (Array.isArray(link.tags)) {
-        link.tags.forEach(tag => {
-          if (tag && typeof tag === 'string') {
-            tagSet.add(tag);
-          }
-        });
-      }
-    });
-    
-    // Add some default categories
-    ['General Experts', 'English Expert', 'Formatters', 'Code Assistant', 'Creative Writing', 'Data Analysis'].forEach(cat => categorySet.add(cat));
-    
-    // Add some default tags
-    ['SvelteKit', 'Remix', 'Vue.js', 'React', 'Angular', 'Node.js', 'Python', 'AI', 'ML', 'API', 'Database'].forEach(tag => tagSet.add(tag));
-    
     return {
-      tags: Array.from(tagSet).sort().map(tag => ({ label: tag, value: tag })),
       models: modelsData.map(model => ({ label: model, value: model })),
-      areaTags: Array.from(tagSet).sort().map(tag => ({ key: tag, name: tag })),
-      areaCategories: Array.from(categorySet).sort().map(cat => ({ key: cat, name: cat }))
     };
-  }, [existingLinks]);
+  }, []);
   
   
   
@@ -119,31 +86,29 @@ export function NewLinkForm({ onClose }: NewLinkFormProps) {
     }));
   };
   
-  const handleAreaTagsChange = (selected: TTag[]) => {
+  const handleAreaTagsChange = (selected: string[]) => {
     setSelectedAreaTags(selected);
     setFormData(prev => ({
       ...prev,
-      tags: selected.map(tag => tag.name)
+      tags: selected
     }));
   };
 
-  const handleTagCreate = (newTag: TTag) => {
+  const handleTagCreate = (newTag: string) => {
     // Optionally, you can add the new tag to your database or cache here
-    // For now, it's handled locally within the component
     console.log('New tag created:', newTag);
   };
 
-  const handleAreaCategoriesChange = (selected: TTag[]) => {
+  const handleAreaCategoriesChange = (selected: string[]) => {
     setSelectedAreaCategories(selected);
     setFormData(prev => ({
       ...prev,
-      category: selected.map(cat => cat.name)
+      category: selected
     }));
   };
 
-  const handleCategoryCreate = (newCategory: TTag) => {
+  const handleCategoryCreate = (newCategory: string) => {
     // Optionally, you can add the new category to your database or cache here
-    // For now, it's handled locally within the component
     console.log('New category created:', newCategory);
   };
 
@@ -199,30 +164,20 @@ export function NewLinkForm({ onClose }: NewLinkFormProps) {
           </div>
 
           <div className="space-y-1 sm:space-y-2">
-            <MultipleSelect
-              tags={availableOptions.areaCategories}
+            <label className="text-sm font-medium">Categories</label>
+            <CategorySelect
+              value={selectedAreaCategories}
               onChange={handleAreaCategoriesChange}
-              onTagCreate={handleCategoryCreate}
-              defaultValue={selectedAreaCategories}
-              label="Categories"
-              placeholder="No categories selected - choose from available categories below"
-              className="w-full"
-              allowCreate={true}
-              createLabel="Create new category"
+              onCreateOption={handleCategoryCreate}
             />
           </div>
 
           <div className="space-y-1 sm:space-y-2">
-            <MultipleSelect
-              tags={availableOptions.areaTags}
+            <label className="text-sm font-medium">Tags</label>
+            <TagsSelect
+              value={selectedAreaTags}
               onChange={handleAreaTagsChange}
-              onTagCreate={handleTagCreate}
-              defaultValue={selectedAreaTags}
-              label="Tags"
-              placeholder="No tags selected - choose from available tags below"
-              className="w-full"
-              allowCreate={true}
-              createLabel="Create new tag"
+              onCreateOption={handleTagCreate}
             />
           </div>
 
