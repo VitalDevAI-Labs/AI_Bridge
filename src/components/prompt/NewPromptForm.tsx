@@ -4,7 +4,8 @@ import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { MultipleSelect, type TTag } from '@/components/ui/multiple-select';
+import { CategorySelect } from '@/components/prompt/category-select';
+import { TagsSelect } from '@/components/prompt/tags-select';
 import { useCreatePrompt, useUpdatePrompt, usePromptCategories, usePromptTags } from '@/hooks/usePrompts';
 import { useToast } from '@/hooks/use-toast';
 import type { Prompt, PromptInsert } from '@/config/types';
@@ -32,27 +33,13 @@ export function NewPromptForm({ prompt, onClose, onSuccess }: NewPromptFormProps
     tags: prompt?.tags || [],
   });
 
-  const [selectedCategory, setSelectedCategory] = useState<TTag[]>(
-    prompt ? prompt.category.map(cat => ({ key: cat, name: cat })) : []
+  const [selectedCategory, setSelectedCategory] = useState<string[]>(
+    prompt ? prompt.category : []
   );
 
-  const [selectedTags, setSelectedTags] = useState<TTag[]>(
-    prompt ? prompt.tags.map(tag => ({ key: tag, name: tag })) : []
+  const [selectedTags, setSelectedTags] = useState<string[]>(
+    prompt ? prompt.tags : []
   );
-
-  // Prepare category options
-  const categoryOptions = useMemo(() => {
-    const defaultCategories = ['Enhancer', 'Formatter', 'Study Expert', 'Code Assistant'];
-    const allCategories = Array.from(new Set([...categories, ...defaultCategories])).sort();
-    return allCategories.map(cat => ({ key: cat, name: cat }));
-  }, [categories]);
-
-  // Prepare tag options
-  const tagOptions = useMemo(() => {
-    const defaultTags = ['Agent', 'speech enhancer', 'text format', 'study notes'];
-    const allTags = Array.from(new Set([...existingTags, ...defaultTags])).sort();
-    return allTags.map(tag => ({ key: tag, name: tag }));
-  }, [existingTags]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,28 +103,28 @@ export function NewPromptForm({ prompt, onClose, onSuccess }: NewPromptFormProps
     }
   };
 
-  const handleCategoryChange = (selected: TTag[]) => {
+  const handleCategoryChange = (selected: string[]) => {
     setSelectedCategory(selected);
     // Allow multiple category selection
     setFormData(prev => ({
       ...prev,
-      category: selected.map(cat => cat.name)
+      category: selected
     }));
   };
 
-  const handleCategoryCreate = (newCategory: TTag) => {
+  const handleCategoryCreate = (newCategory: string) => {
     console.log('New category created:', newCategory);
   };
 
-  const handleTagsChange = (selected: TTag[]) => {
+  const handleTagsChange = (selected: string[]) => {
     setSelectedTags(selected);
     setFormData(prev => ({
       ...prev,
-      tags: selected.map(tag => tag.name)
+      tags: selected
     }));
   };
 
-  const handleTagCreate = (newTag: TTag) => {
+  const handleTagCreate = (newTag: string) => {
     console.log('New tag created:', newTag);
   };
 
@@ -165,16 +152,11 @@ export function NewPromptForm({ prompt, onClose, onSuccess }: NewPromptFormProps
         </div>
 
         <div className="space-y-1 sm:space-y-2">
-          <MultipleSelect
-            tags={categoryOptions}
+          <label className="text-sm font-medium">Category</label>
+          <CategorySelect
+            value={selectedCategory}
             onChange={handleCategoryChange}
-            onTagCreate={handleCategoryCreate}
-            defaultValue={selectedCategory}
-            label="Category"
-            placeholder="Select or create categories (at least one required)"
-            className="w-full"
-            allowCreate={true}
-            createLabel="Create new category"
+            onCreateOption={handleCategoryCreate}
           />
         </div>
 
@@ -206,16 +188,11 @@ export function NewPromptForm({ prompt, onClose, onSuccess }: NewPromptFormProps
         </div>
 
         <div className="space-y-1 sm:space-y-2">
-          <MultipleSelect
-            tags={tagOptions}
+          <label className="text-sm font-medium">Tags</label>
+          <TagsSelect
+            value={selectedTags}
             onChange={handleTagsChange}
-            onTagCreate={handleTagCreate}
-            defaultValue={selectedTags}
-            label="Tags"
-            placeholder="Add tags for easier searching"
-            className="w-full"
-            allowCreate={true}
-            createLabel="Create new tag"
+            onCreateOption={handleTagCreate}
           />
         </div>
 
