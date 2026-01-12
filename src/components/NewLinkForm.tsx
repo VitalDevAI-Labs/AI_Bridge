@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { MultiSelect, type Option } from '@/components/ui/multiselect';
+import { ModelSelect } from '@/components/ui/model-select';
 import { CategorySelect, type CategoryOption } from '@/components/ui/category-select';
 import { TagsSelect, type TagOption } from '@/components/ui/tags-select';
 import { useCreateLlmLink, useLlmLinks } from '@/hooks/useLlmLinks';
@@ -68,21 +68,10 @@ export function NewLinkForm({ onClose }: NewLinkFormProps) {
     }
   };
 
-  // Extract unique categories and tags from existing data
-  const availableOptions = useMemo(() => {
-    return {
-      models: modelsData.map(model => ({ label: model, value: model })),
-    };
-  }, []);
-  
-  
-  
-  const handleModelsChange = (selected: Option[]) => {
-    setSelectedModels(selected);
-    // For models, we'll take the first selected model since it's typically single-select
+  const handleModelChange = (model: string) => {
     setFormData(prev => ({
       ...prev,
-      model: selected.length > 0 ? selected[0].value : ''
+      model: model
     }));
   };
   
@@ -142,14 +131,9 @@ export function NewLinkForm({ onClose }: NewLinkFormProps) {
 
           <div className="space-y-1 sm:space-y-2">
             <label className="text-sm font-medium">Model <span className="text-red-500">*</span></label>
-            <MultiSelect
-              options={availableOptions.models}
-              value={selectedModels}
-              onChange={handleModelsChange}
-              placeholder="Select a model"
-              hasSelectAll={false}
-              disableSearch={false}
-              className="w-full"
+            <ModelSelect
+              value={formData.model}
+              onChange={handleModelChange}
             />
           </div>
 
