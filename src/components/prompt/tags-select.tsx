@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import Select, { MultiValue } from 'react-select';
+import CreatableSelect from 'react-select/creatable';
+import { MultiValue } from 'react-select';
 import { usePromptTags } from '@/hooks/usePrompts';
 
 // Predefined tags
@@ -118,7 +119,7 @@ export function TagsSelect({
   };
 
   return (
-    <Select
+    <CreatableSelect
       isMulti
       name="prompt-tags"
       options={tagOptions}

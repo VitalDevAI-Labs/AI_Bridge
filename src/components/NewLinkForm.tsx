@@ -30,7 +30,6 @@ export function NewLinkForm({ onClose }: NewLinkFormProps) {
     tags: [],
     url: ''
   });
-  const [selectedModels, setSelectedModels] = useState<Option[]>([]);
   const [selectedAreaTags, setSelectedAreaTags] = useState<string[]>([]);
   const [selectedAreaCategories, setSelectedAreaCategories] = useState<string[]>([]);
 

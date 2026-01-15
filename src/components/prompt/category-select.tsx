@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import Select, { MultiValue } from 'react-select';
+import CreatableSelect from 'react-select/creatable';
+import { MultiValue } from 'react-select';
 import { usePromptCategories } from '@/hooks/usePrompts';
 
 // Predefined categories
@@ -118,7 +119,7 @@ export function CategorySelect({
   };
 
   return (
-    <Select
+    <CreatableSelect
       isMulti
       name="prompt-categories"
       options={categoryOptions}

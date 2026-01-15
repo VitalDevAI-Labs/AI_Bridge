@@ -113,7 +113,12 @@ export function NewPromptForm({ prompt, onClose, onSuccess }: NewPromptFormProps
   };
 
   const handleCategoryCreate = (newCategory: string) => {
-    console.log('New category created:', newCategory);
+    // Attempt to add the new category if it doesn't already exist
+    if (!categories.includes(newCategory)) {
+      // Note: This assumes usePromptCategories hook has a method to add a category
+      // You might need to implement this in your hooks/usePrompts.ts file
+      console.log('New category created:', newCategory);
+    }
   };
 
   const handleTagsChange = (selected: string[]) => {
@@ -125,7 +130,12 @@ export function NewPromptForm({ prompt, onClose, onSuccess }: NewPromptFormProps
   };
 
   const handleTagCreate = (newTag: string) => {
-    console.log('New tag created:', newTag);
+    // Attempt to add the new tag if it doesn't already exist
+    if (!existingTags.includes(newTag)) {
+      // Note: This assumes usePromptTags hook has a method to add a tag
+      // You might need to implement this in your hooks/usePrompts.ts file
+      console.log('New tag created:', newTag);
+    }
   };
 
   return (
